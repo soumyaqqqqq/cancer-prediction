@@ -1,4 +1,5 @@
-Training/
+Training/*
+!Training/.gitkeep
 # Do NOT ignore notebooks in Testing/glioma
 !Testing/glioma/*.ipynb
 *.jpg
@@ -8,10 +9,7 @@ Training/
 *.tif
 *.tiff
 *.gif
-# Ignore model files
-model/
-*.h5
-*.keras
+
 # Ignore notebook checkpoints
 .ipynb_checkpoints/
 # Ignore system files
