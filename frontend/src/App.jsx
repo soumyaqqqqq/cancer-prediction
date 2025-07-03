@@ -23,8 +23,8 @@ function App() {
     <Route path='/signup' element={<Register />} />
     <Route path='/blog' element={<Blog />} />
     <Route path='*' element={<h1>404 Not Found</h1>} />
-    <Route path='/report' element={< Report/>} />
-    </Routes>  
+    <Route path='/predict' element={< Report/>} />
+    </Routes>
     </BrowserRouter>
   </>
   )
