@@ -1,0 +1,19 @@
+# Ignore dataset folders
+Training/
+Testing/
+*.jpg
+*.jpeg
+*.png
+*.bmp
+*.tif
+*.tiff
+*.gif
+# Ignore model files
+model/
+*.h5
+*.keras
+# Ignore notebook checkpoints
+.ipynb_checkpoints/
+# Ignore system files
+.DS_Store
+Thumbs.db
