@@ -9,10 +9,7 @@ Training/*
 *.tif
 *.tiff
 *.gif
-# Ignore model files
-model/
-*.h5
-*.keras
+
 # Ignore notebook checkpoints
 .ipynb_checkpoints/
 # Ignore system files
