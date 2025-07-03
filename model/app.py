@@ -7,14 +7,58 @@ from werkzeug.utils import secure_filename
 from flask_cors import CORS
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras import layers, models
 
 # Configuration
 MODEL_PATH = os.path.join(os.path.dirname(__file__), 'brain_tumor_model.keras')
 IMG_SIZE = 150
-CLASS_NAMES = ['class_0', 'class_1', 'class_2', 'class_3']  # Replace with real class names
+CLASS_NAMES = ['glioma', 'meningioma', 'notumor', 'pituitary', 'unlabeled']  # Replace with real class names
 
-# Load model
-model = load_model(MODEL_PATH)
+# Load or build model
+try:
+    model = load_model(MODEL_PATH)
+    # Check output shape
+    if model.output_shape[-1] != len(CLASS_NAMES):
+        raise ValueError('Model output shape does not match number of classes.')
+except Exception:
+    # Build new model for correct number of classes
+    def build_model():
+        m = models.Sequential([
+            layers.Input(shape=(IMG_SIZE, IMG_SIZE, 3)),
+            layers.Conv2D(32, (3, 3), activation='relu'),
+            layers.MaxPooling2D(2, 2),
+            layers.Conv2D(64, (3, 3), activation='relu'),
+            layers.MaxPooling2D(2, 2),
+            layers.Conv2D(128, (3, 3), activation='relu'),
+            layers.MaxPooling2D(2, 2),
+            layers.Flatten(),
+            layers.Dense(128, activation='relu'),
+            layers.Dense(len(CLASS_NAMES), activation='softmax')
+        ])
+        m.compile(optimizer=Adam(learning_rate=1e-4), loss='categorical_crossentropy', metrics=['accuracy'])
+        return m
+    model = build_model()
+    # Initial training
+    def initial_train():
+        train_dir = os.path.join(os.path.dirname(__file__), '../data/brain-data/Training')
+        datagen = ImageDataGenerator(rescale=1./255, validation_split=0.1)
+        train_gen = datagen.flow_from_directory(
+            train_dir,
+            target_size=(IMG_SIZE, IMG_SIZE),
+            batch_size=16,
+            class_mode='categorical',
+            subset='training'
+        )
+        val_gen = datagen.flow_from_directory(
+            train_dir,
+            target_size=(IMG_SIZE, IMG_SIZE),
+            batch_size=16,
+            class_mode='categorical',
+            subset='validation'
+        )
+        model.fit(train_gen, validation_data=val_gen, epochs=3)
+        model.save(MODEL_PATH)
+    initial_train()
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
