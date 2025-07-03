@@ -1,6 +1,6 @@
-# Ignore dataset folders
 Training/
-Testing/
+# Do NOT ignore notebooks in Testing/glioma
+!Testing/glioma/*.ipynb
 *.jpg
 *.jpeg
 *.png
